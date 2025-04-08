@@ -19,7 +19,6 @@ from ..data import (
     Region,
     Platform,
     Continent,
-    Tier,
     GameType,
     GameMode,
     MatchType,
@@ -231,7 +230,7 @@ class ParticipantData(CoreData):
             s["perk"]: [s.pop("var1"), s.pop("var2"), s.pop("var3")] for s in selections
         }
         self.stat_perks = stat_perks
-        non_stats = {
+        non_stats = {  # noqa: F841
             "championId": kwargs.get("championId", None),
             "championName": kwargs.get("championName", None),
             "gameEndedInEarlySurrender": kwargs.get("gameEndedInEarlySurrender", None),
@@ -239,7 +238,6 @@ class ParticipantData(CoreData):
             "individualPosition": kwargs.get("individualPosition", None),
             "participantId": kwargs.get("participantId", None),
             "profileIcon": kwargs.get("profileIcon", None),
-            "puuid": kwargs.get("puuid", None),
             "riotIdName": kwargs.get("riotIdName", None),
             "riotIdTagLine": kwargs.get("riotIdTagline", None),
             "summoner1Id": kwargs.get("summoner1Id", None),
@@ -359,10 +357,8 @@ class ParticipantData(CoreData):
             "pushPings": kwargs.pop("pushPings", None),
             "visionClearedPings": kwargs.pop("visionClearedPings", None),
             "enemyMissingPings": kwargs.pop("enemyMissingPings", None),
+            "enemyVisionPings": kwargs.pop('enemyVisionPings',None),
             "basicPings": kwargs.pop("basicPings", None),
-            "gameEndedInEarlySurrender": kwargs.get("gameEndedInEarlySurrender", None),
-            "gameEndedInSurrender": kwargs.get("gameEndedInSurrender", None),
-            "puuid": kwargs.get("puuid", None),
         }
         self.stats = ParticipantStatsData(**stats)
 
@@ -474,7 +470,7 @@ class MatchData(CoreData):
 ##############
 
 
-class MatchHistory(CassiopeiaLazyList):  # type: List[Match]
+class MatchHistory(CassiopeiaLazyList):
     """The match history for a summoner. By default, this will return the entire match history."""
 
     _data_types = {MatchListData}
@@ -1223,81 +1219,6 @@ class ParticipantStats(CassiopeiaObject):
 
     @property
     @load_match_on_attributeerror
-    def puuid(self) -> int:
-        return self._data[ParticipantStatsData].puuid
-
-    @property
-    @load_match_on_attributeerror
-    def onMyWayPings(self) -> int:
-        return self._data[ParticipantStatsData].onMyWayPings
-
-    @property
-    @load_match_on_attributeerror
-    def assistMePings(self) -> int:
-        return self._data[ParticipantStatsData].assistMePings
-
-    @property
-    @load_match_on_attributeerror
-    def commandPings(self) -> int:
-        return self._data[ParticipantStatsData].commandPings
-
-    @property
-    @load_match_on_attributeerror
-    def dangerPings(self) -> int:
-        return self._data[ParticipantStatsData].dangerPings
-
-    @property
-    @load_match_on_attributeerror
-    def getBackPings(self) -> int:
-        return self._data[ParticipantStatsData].getBackPings
-
-    @property
-    @load_match_on_attributeerror
-    def holdPings(self) -> int:
-        return self._data[ParticipantStatsData].holdPings
-
-    @property
-    @load_match_on_attributeerror
-    def needVisionPings(self) -> int:
-        return self._data[ParticipantStatsData].needVisionPings
-
-    @property
-    @load_match_on_attributeerror
-    def allInPings(self) -> int:
-        return self._data[ParticipantStatsData].allInPings
-
-    @property
-    @load_match_on_attributeerror
-    def pushPings(self) -> int:
-        return self._data[ParticipantStatsData].pushPings
-
-    @property
-    @load_match_on_attributeerror
-    def visionClearedPings(self) -> int:
-        return self._data[ParticipantStatsData].visionClearedPings
-
-    @property
-    @load_match_on_attributeerror
-    def enemyMissingPings(self) -> int:
-        return self._data[ParticipantStatsData].enemyMissingPings
-
-    @property
-    @load_match_on_attributeerror
-    def gameEndedInEarlySurrender(self) -> int:
-        return self._data[ParticipantStatsData].gameEndedInEarlySurrender
-
-    @property
-    @load_match_on_attributeerror
-    def gameEndedInSurrender(self) -> int:
-        return self._data[ParticipantStatsData].gameEndedInSurrender
-
-    @property
-    @load_match_on_attributeerror
-    def basicPings(self) -> int:
-        return self._data[ParticipantStatsData].basicPings
-
-    @property
-    @load_match_on_attributeerror
     def assists(self) -> int:
         return self._data[ParticipantStatsData].assists
 
@@ -1696,6 +1617,70 @@ class ParticipantStats(CassiopeiaObject):
     def win(self) -> bool:
         return self._data[ParticipantStatsData].win
 
+    @property
+    @load_match_on_attributeerror
+    def onMyWayPings(self) -> int:
+        return self._data[ParticipantStatsData].onMyWayPings
+
+    @property
+    @load_match_on_attributeerror
+    def assistMePings(self) -> int:
+        return self._data[ParticipantStatsData].assistMePings
+
+    @property
+    @load_match_on_attributeerror
+    def commandPings(self) -> int:
+        return self._data[ParticipantStatsData].commandPings
+
+    @property
+    @load_match_on_attributeerror
+    def dangerPings(self) -> int:
+        return self._data[ParticipantStatsData].dangerPings
+
+    @property
+    @load_match_on_attributeerror
+    def getBackPings(self) -> int:
+        return self._data[ParticipantStatsData].getBackPings
+
+    @property
+    @load_match_on_attributeerror
+    def holdPings(self) -> int:
+        return self._data[ParticipantStatsData].holdPings
+
+    @property
+    @load_match_on_attributeerror
+    def needVisionPings(self) -> int:
+        return self._data[ParticipantStatsData].needVisionPings
+
+    @property
+    @load_match_on_attributeerror
+    def allInPings(self) -> int:
+        return self._data[ParticipantStatsData].allInPings
+
+    @property
+    @load_match_on_attributeerror
+    def pushPings(self) -> int:
+        return self._data[ParticipantStatsData].pushPings
+
+    @property
+    @load_match_on_attributeerror
+    def visionClearedPings(self) -> int:
+        return self._data[ParticipantStatsData].visionClearedPings
+
+    @property
+    @load_match_on_attributeerror
+    def enemyMissingPings(self) -> int:
+        return self._data[ParticipantStatsData].enemyMissingPings
+
+    @property
+    @load_match_on_attributeerror
+    def basicPings(self) -> int:
+        return self._data[ParticipantStatsData].basicPings
+
+    @property
+    @load_match_on_attributeerror
+    def enemyVisionPings(self) -> int:
+        return self._data[ParticipantStatsData].enemyVisionPings
 
 @searchable(
     {
@@ -2231,7 +2216,7 @@ class Match(CassiopeiaGhost):
         elif self.map.name == "Howling Abyss":
             rx0, ry0, rx1, ry1 = -28, -19, 12849, 12858
         else:
-            raise NotImplemented
+            raise NotImplementedError(f"Map {self.map.name} not supported")
 
         imx0, imy0, imx1, imy1 = self.map.image.image.getbbox()
 

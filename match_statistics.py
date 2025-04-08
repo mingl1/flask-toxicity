@@ -1,11 +1,13 @@
 from cassiopeia import cassiopeia as cass
 from cassiopeia import Account, Summoner
-import json
-
+import os
+from dotenv import load_dotenv
+load_dotenv()
+cass.set_riot_api_key(os.environ.get('RIOTAPIKEY'))
 
 def get_participant_data(participants, puuid):
     for p in participants:
-        if puuid == p.stats.puuid:
+        if puuid == p.summoner().puuid:
             p_data = {
                 "champion": p.champion.name,
                 "pings": {
@@ -21,10 +23,10 @@ def get_participant_data(participants, puuid):
                     "visionClearedPings": p.stats.visionClearedPings,
                     "enemyMissingPings": p.stats.enemyMissingPings,
                 },
-                "ff": {
-                    "gameEndedInEarlySurrender": p.stats.gameEndedInEarlySurrender,
-                    "gameEndedInSurrender": p.stats.gameEndedInSurrender,
-                },
+                # "ff": {
+                #     "gameEndedInEarlySurrender": p.endedInEarlySurrender,
+                #     "gameEndedInSurrender": p.endedInSurrender,
+                # },
                 "role": str(p.role),
                 # "kills": p.stats.kills,
                 # "assist": p.stats.assists,
@@ -54,27 +56,24 @@ def print_match_history(summoner, num_matches, puuid):
         summoner.match_history[0:num_matches],
         start=1,
     ):
-        # print(match.game_type)
-
-        if "aram" in str(match.queue).lower():
+        if 'ranked' in str(match.queue).lower():
+            targetPlayerStats = get_participant_data(match.blue_team.participants, puuid)
+            if not targetPlayerStats:
+                targetPlayerStats = get_participant_data(match.red_team.participants, puuid)
+            targetPlayerStats["duration"] = match.duration.total_seconds()
+            ret.append(targetPlayerStats)
+        else:
             continue
-        r = get_participant_data(match.blue_team.participants, puuid)
-        if not r:
-            r = get_participant_data(match.red_team.participants, puuid)
-        if r:
-            r["duration"] = match.duration.total_seconds()
-            ret.append(r)
-
     return ret
 
 
 def main():
-    name = "Pobelter"
-    tagline = "NA1"
+    name = "bming"
+    tagline = "lin"
     region = "NA"
     account = Account(name=name, tagline=tagline, region=region)
     summoner = account.summoner
-    print_match_history(summoner, 5)
+    print(print_match_history(summoner, 5,summoner.puuid))
 
 
 if __name__ == "__main__":
